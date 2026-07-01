@@ -8,7 +8,7 @@ import PushMenu from './push-menu.js'
 import { initAccessibility } from './accessibility.js'
 
 /**
- * AdminLTE v4.0.2
+ * AdminLTE v4.0.3
  * Author: Colorlib
  * Website: AdminLTE.io <https://adminlte.io>
  * License: Open source - MIT <https://opensource.org/licenses/MIT>

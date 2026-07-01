@@ -7,6 +7,8 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+## [4.0.3] - 2026-07-01
+
 ### Added
 
 - **Hotwired Turbo / Turbo Drive support:** plugins now re-initialise on `turbo:load`, so PushMenu, TreeView and the other JS components keep working after Turbo swaps the `<body>` on in-app navigation (previously they went dead after the first link click). Each init cycle uses an `AbortController` whose signal is aborted on `turbo:before-render`, so the `window`/`document`-level listeners are torn down before re-init instead of stacking up on every navigation. (#563, #5890 — diagnosed and prototyped by @MarkDaleman in #6058)
@@ -15,6 +17,10 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 - **Fullscreen state sync:** the fullscreen icons and the `maximized`/`minimized` events are now driven by the native `fullscreenchange` event instead of the request/exit calls. The UI no longer flips when a fullscreen request is denied (permissions policy, missing `allowfullscreen`, lost user gesture), and it now stays in sync when the user exits with `ESC` or `F11`. (builds on @webgo-oss's report in #6055)
 - **Accessibility:** form inputs lacking both an `id` and a `name` now receive a stable, generated error-message id instead of colliding on a shared `-error` id and appending a new orphaned error node on every re-validation. (#6055, reported by @webgo-oss)
+
+### Updated
+
+- All dependencies bumped to their latest releases, including four majors — **Astro 6 → 7** (which pulls in Vite 8), **@astrojs/mdx 6 → 7**, **eslint-plugin-astro 1 → 2**, and **eslint-plugin-unicorn 68 → 69** — plus ESLint, Prettier, Stylelint, PostCSS, Rollup and typescript-eslint. No source changes were required; the full `npm run production` pipeline (lint + Astro build + bundlewatch) passes and `npm audit` remains at **0 vulnerabilities**. (supersedes Dependabot PRs #6065–#6074)
 
 ## [4.0.2] - 2026-06-11
 
