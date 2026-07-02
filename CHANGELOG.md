@@ -7,6 +7,17 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+### Added
+
+- **ESM bundle and TypeScript declarations on npm:** `dist/js/adminlte.esm.js` (+ `.min`) ships alongside the UMD build, generated `.d.ts` files ship under `dist/js/types/`, and package.json gains `module`, `types`, and a full `exports` map (with `sass`/`style` conditions and `./dist/*` + `./src/scss/*` subpaths). `import { PushMenu } from "admin-lte"` now resolves natively in Vite/webpack and type-checks out of the box — previously the package shipped a single minified UMD file with no typings at all.
+- **`ColorMode` module in the bundle:** the light/dark/auto switcher (persisted in `lte-theme`, OS-preference aware, `[data-bs-theme-value]` data-API, `changed.lte.color-mode` event) is now part of `adminlte.js`. Applications no longer need to copy the demo's inline script; the demo pages now use the bundled module. Only the tiny no-flash snippet in `<head>` remains inline, by design.
+- **`bootstrap` declared as a peer dependency** — the Sass source imports it, so `@use "admin-lte/src/scss/adminlte"` now works after a plain `npm install admin-lte` (npm installs the peer automatically). Documented the required Sass load-path setup.
+
+### Changed
+
+- **Docs styles split out of the production CSS:** the documentation/FAQ styling now compiles to a separate `adminlte-docs.css`, loaded only by the docs pages. `adminlte.min.css` drops another ~2 KB gzip (now ~40.8 KB); bundlewatch budgets tightened accordingly.
+- Rewrote the color-mode docs page around the bundled `ColorMode` module (the old copy-paste script it showed used a stale storage key); tsconfig.json no longer carries the invalid `"root": true` option.
+
 ## [4.0.4] - 2026-07-02
 
 ### Added
