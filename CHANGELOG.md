@@ -9,6 +9,22 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ### Added
 
+- **Component lifecycle API (Bootstrap-style):** every JS component now has `getInstance(element)`, `getOrCreateInstance(element, config?)` and `dispose()`, backed by a per-element WeakMap registry (instances are garbage-collected with their elements — Turbo-safe). The data API now uses **delegated document-level listeners**, so toggles inside content inserted after page load (AJAX partials, Turbo Frames) work without re-initialisation. `PushMenu` is finally controllable programmatically via `PushMenu.getInstance(sidebar)`.
+- **New demo pages:** a blank **starter page** (the most-requested v3 page, absent from v4), a dedicated **ApexCharts** page with six chart types, and a **Users** management page (searchable directory table, add-user and delete-confirmation modals, pagination). All linked from the sidebar.
+- **Test baseline:** a vitest + happy-dom unit suite (30 tests across the component lifecycle, card/treeview/push-menu behavior, ColorMode, and slide animations) wired into `npm run production`; plus `npm run test-a11y` — an axe-core check over key built demo pages that fails on serious/critical WCAG violations, with a dedicated GitHub workflow.
+
+### Fixed
+
+- First findings of the new axe gate, fixed at the source: breadcrumb links now use the darker link shade (Bootstrap's default blue was 4.26:1 against the content-header's gray background — below WCAG AA's 4.5:1), the direct-chat message pane is keyboard-focusable (`tabindex="0"` + `role="log"`), and muted footnote text uses `text-body-secondary` instead of the failing `text-secondary`.
+
+### Changed
+
+- **Component events overhauled (behavior change):** all plugin events are now bubbling `CustomEvent`s dispatched on the component's root element (the card, the nav item, the sidebar) — previously most were non-bubbling and card events fired on whatever was clicked, including the `<i>` icon. Animated actions gained cancelable "before" events (`collapse`/`expand`/`remove.lte.card-widget`, `expand`/`collapse.lte.treeview`, `open`/`collapse.lte.push-menu`) and their "after" events (`collapsed`, `expanded`, `removed`, `opened`, …) now fire when the animation completes, not when it starts. If you listened for card events on the tool buttons themselves, listen on the card or on `document` instead.
+- **Vendored Bootstrap variables fork replaced:** the 1,766-line `_bootstrap-variables.scss` copy (which had to be re-synced by hand every Bootstrap release) is gone; AdminLTE's ~10 actual changes now live in a small `_bootstrap-overrides.scss` loaded before Bootstrap's own variables. Compiled CSS is byte-identical.
+- **Sass deprecation policy:** the build no longer silences all warnings (`--quiet`); it silences only dependency warnings and the known `@import` deprecation (`--quiet-deps --silence-deprecation=import`), so new deprecations in AdminLTE's own code surface at build time. All deprecated global built-ins (`map-get`, `map-keys`) migrated to the `sass:map` module. The full `@use` module-system migration is intentionally deferred until Bootstrap ships module-system Sass (Bootstrap 6) — Bootstrap 5's partials are designed around `@import`'s shared global namespace and cannot be loaded individually via `@use`.
+
+### Added (packaging)
+
 - **ESM bundle and TypeScript declarations on npm:** `dist/js/adminlte.esm.js` (+ `.min`) ships alongside the UMD build, generated `.d.ts` files ship under `dist/js/types/`, and package.json gains `module`, `types`, and a full `exports` map (with `sass`/`style` conditions and `./dist/*` + `./src/scss/*` subpaths). `import { PushMenu } from "admin-lte"` now resolves natively in Vite/webpack and type-checks out of the box — previously the package shipped a single minified UMD file with no typings at all.
 - **`ColorMode` module in the bundle:** the light/dark/auto switcher (persisted in `lte-theme`, OS-preference aware, `[data-bs-theme-value]` data-API, `changed.lte.color-mode` event) is now part of `adminlte.js`. Applications no longer need to copy the demo's inline script; the demo pages now use the bundled module. Only the tiny no-flash snippet in `<head>` remains inline, by design.
 - **`bootstrap` declared as a peer dependency** — the Sass source imports it, so `@use "admin-lte/src/scss/adminlte"` now works after a plain `npm install admin-lte` (npm installs the peer automatically). Documented the required Sass load-path setup.
